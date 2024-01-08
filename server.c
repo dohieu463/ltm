@@ -209,13 +209,13 @@ void *handle_client(void *arg){
 	free(session); 
 	close(client_sockfd); 
 } 
+
 void handle_UDPTASK(int client_sockfd,Session * session){
 	int bytes_sent , received_bytes ;
     pthread_mutex_lock(&clients_mutex);
     
     if(session->account == NULL){
 		received_bytes = send(client_sockfd,"1300",sizeof("1300"),0); 
-        pthread_mutex_unlock(&clients_mutex);
 	}
 	else{
 		char *Pj_id , *mem_name , *Task_id; 
@@ -225,17 +225,19 @@ void handle_UDPTASK(int client_sockfd,Session * session){
 		int pj_id = atoi(Pj_id);
 		int task_id = atoi(Task_id); 
 		char *mess_send = updtask(pj_id,mem_name, task_id, session->account);
+		mess_send[strlen(mess_send)] = '\0';
+
 		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0); 
-        pthread_mutex_unlock(&clients_mutex); 
 	}
+	pthread_mutex_unlock(&clients_mutex);
 }
+
 void handle_SETTASK(int client_sockfd,Session * session){
 	int bytes_sent , received_bytes ;
     pthread_mutex_lock(&clients_mutex);
     
     if(session->account == NULL){
 		received_bytes = send(client_sockfd,"1300",sizeof("1300"),0); 
-        pthread_mutex_unlock(&clients_mutex);
 	}
 	else{
 		char *Pj_id , *mem_name , *Task_id; 
@@ -245,32 +247,36 @@ void handle_SETTASK(int client_sockfd,Session * session){
 		int pj_id = atoi(Pj_id);
 		int task_id = atoi(Task_id); 
 		char *mess_send = updtask(pj_id,mem_name, task_id, session->account);
-		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0); 
-        pthread_mutex_unlock(&clients_mutex); 
+		mess_send[strlen(mess_send)] = '\0'; 
+		
+		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0);
 	}
+	pthread_mutex_unlock(&clients_mutex);
 }
+
 void handle_LSTASK(int client_sockfd,Session *session){
 	int bytes_sent , received_bytes ;
     pthread_mutex_lock(&clients_mutex);
 	if(session->account == NULL){
 		received_bytes = send(client_sockfd,"1300",sizeof("1300"),0); 
-        pthread_mutex_unlock(&clients_mutex);
 	}
 	else{
 		char *Pj_id;
 		Pj_id = strtok(NULL , " ");  
 	    int pj_id = atoi(Pj_id);
         char *mess_send = lstask(pj_id, session->account);
-		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0); 
-        pthread_mutex_unlock(&clients_mutex);
+		mess_send[strlen(mess_send)] = '\0';
+		
+		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0);
 	} 
+	pthread_mutex_unlock(&clients_mutex);
 }
+
 void handle_MKTASK(int client_sockfd,Session *session){
 	int bytes_sent , received_bytes ;
     pthread_mutex_lock(&clients_mutex);
 	if(session->account == NULL){
 		received_bytes = send(client_sockfd,"1300",sizeof("1300"),0); 
-        pthread_mutex_unlock(&clients_mutex);
 	}
 	else{
 		char *Pj_id , *taskName , *endTime ;
@@ -279,42 +285,48 @@ void handle_MKTASK(int client_sockfd,Session *session){
         endTime = strtok(NULL, " "); // lay endTime nhap vao
         int pj_id = atoi(Pj_id);
         char *mess_send = mk_task(pj_id,taskName, endTime,session->account);
-		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0); 
-        pthread_mutex_unlock(&clients_mutex);
+		mess_send[strlen(mess_send)] = '\0';
+		
+		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0);
 	} 
+	pthread_mutex_unlock(&clients_mutex);
 }
+
 void handle_CHKPJ(int client_sockfd,Session * session){
     int bytes_sent , received_bytes ;
     pthread_mutex_lock(&clients_mutex);
     
     if(session->account == NULL){
 		received_bytes = send(client_sockfd,"1300",sizeof("1300"),0); 
-        pthread_mutex_unlock(&clients_mutex);
 	}
 	else{
 		char *Pj_id; 
 		Pj_id = strtok(NULL , " "); // lay proid nhap vao
 		int pj_id = atoi(Pj_id);  
 		char *mess_send = chk_pj(session->account,pj_id);
-		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0); 
-        pthread_mutex_unlock(&clients_mutex); 
+		mess_send[strlen(mess_send)] = '\0';
+		
+		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0);
 	}
+	pthread_mutex_unlock(&clients_mutex);
 }
+
 void handle_FINDPJ(int client_sockfd,Session * session){
     int bytes_sent , received_bytes ;
     pthread_mutex_lock(&clients_mutex);
     
     if(session->account == NULL){
 		received_bytes = send(client_sockfd,"1300",sizeof("1300"),0); 
-        pthread_mutex_unlock(&clients_mutex);
 	}
 	else{
 		char *Pj_name; 
 		Pj_name = strtok(NULL , " "); // lay projname nhap vao  
 		char *mess_send = find_pj(Pj_name);
-		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0); 
-        pthread_mutex_unlock(&clients_mutex); 
+		mess_send[strlen(mess_send)] = '\0';
+		
+		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0);
 	}
+	pthread_mutex_unlock(&clients_mutex);
 }
 /*
 void handle_RVTASK(int client_sockfd,Session * session){
@@ -343,7 +355,6 @@ void handle_Add_Member(int client_sockfd,Session * session){
     
     if(session->account == NULL){
 		received_bytes = send(client_sockfd,"1300",sizeof("1300"),0); 
-        pthread_mutex_unlock(&clients_mutex);
 	}
 	else{
 		char *Pj_id , *mem_name; 
@@ -351,32 +362,36 @@ void handle_Add_Member(int client_sockfd,Session * session){
         mem_name = strtok(NULL, " "); // lay endTime nhap vao
         int pj_id = atoi(Pj_id); 
 		char *mess_send = addmem_pj(session->account, pj_id, mem_name);
-		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0); 
-        pthread_mutex_unlock(&clients_mutex); 
+		mess_send[strlen(mess_send)] = '\0';
+		
+		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0);
 	}
+	pthread_mutex_unlock(&clients_mutex);
 }
+
 void handle_LSPJ(int client_sockfd,Session *session){
 	int bytes_sent , received_bytes ;
     pthread_mutex_lock(&clients_mutex);
 	
 	if(session->account == NULL){
 		received_bytes = send(client_sockfd,"1300",sizeof("1300"),0); 
-        pthread_mutex_unlock(&clients_mutex);
 	}
 	else{
 		
 		char *mess_send = ls_pj(session->account);
 		printf("%s\n", mess_send);
-		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0); 
-        pthread_mutex_unlock(&clients_mutex);    
+		mess_send[strlen(mess_send)] = '\0';
+		
+		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0);
 	} 
+	pthread_mutex_unlock(&clients_mutex);
 }
+
 void handle_CreatNewProject(int client_sockfd,Session *session){
 	int bytes_sent , received_bytes ;
     pthread_mutex_lock(&clients_mutex);
 	if(session->account == NULL){
 		received_bytes = send(client_sockfd,"1300",sizeof("1300"),0); 
-        pthread_mutex_unlock(&clients_mutex);
 	}
 	else{
 		if (root_pj == NULL) printf("a\n");
@@ -386,29 +401,31 @@ void handle_CreatNewProject(int client_sockfd,Session *session){
 		projName = strtok(NULL , " "); // lay projname nhap vao  
         endTime = strtok(NULL, " "); // lay endTime nhap vao
         char *mess_send = mk_pj(projName,endTime,5,session->account);
-		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0); 
-        pthread_mutex_unlock(&clients_mutex);
+		mess_send[strlen(mess_send)] = '\0';
+		
+		received_bytes = send(client_sockfd , mess_send , strlen(mess_send) , 0);
 	} 
+	pthread_mutex_unlock(&clients_mutex);
 }
+
 void handle_LogOut(int client_sockfd , Session *session){
 	int bytes_sent , received_bytes ;
 
 	pthread_mutex_lock(&clients_mutex);
 
-	if(session->account == NULL){
-		
+	if(session->account == NULL){		
 		// 1300 : log out that bai , tai khoan chua dang nhap     
         received_bytes = send(client_sockfd,"1300",sizeof("1300"),0); 
-        pthread_mutex_unlock(&clients_mutex);
 	}
 	else{
 		session->account->IsLogIn = 0 ; 
 		session->account = NULL; 
 	    // 1301 : log out thanh cong    
 		received_bytes = send(client_sockfd,"1301",sizeof("1301"),0); 
-        pthread_mutex_unlock(&clients_mutex);
 	}
+	pthread_mutex_unlock(&clients_mutex);
 }
+
 void handle_login(int client_sockfd , Session *session){
 	char *username , *password;  
 	int bytes_sent , received_bytes ;
@@ -416,33 +433,26 @@ void handle_login(int client_sockfd , Session *session){
 	pthread_mutex_lock(&clients_mutex);
 	
 	Account *account; 
-    if(session->account != NULL){
-		
+    if(session->account != NULL){		
 		// 1214 : ban dang dang nhap tai khoan khac   
         received_bytes = send(client_sockfd,"1214",sizeof("1214"),0); 
-        pthread_mutex_unlock(&clients_mutex);
 	}
-	else{
-    
+	else{    
 	    username = strtok(NULL , " "); // lay username nhap vao  
-    
         password = strtok(NULL, " "); // lay password nhap vao  
         // lay tai khoan tu co so du lieu 
 	    account = findaccbyusername(root_acc,username);
 	    if(account == NULL){
 		    //1213 : khong ton tai tai khoan  
             received_bytes = send(client_sockfd,"1213",sizeof("1213"),0); 
-	        pthread_mutex_unlock(&clients_mutex);
 	    }
 	    else if(account->IsLogIn == 1){
 	    	// 1210 : tai khoan dang duoc dang nhap o 1 phien khac    
             received_bytes = send(client_sockfd,"1210",sizeof("1210"),0); 
-            pthread_mutex_unlock(&clients_mutex);
 		}
 		else if(account->accountStatus == 0){
 			// 1211 : tai khoan dang bi khoa     
             received_bytes = send(client_sockfd,"1211",sizeof("1211"),0); 
-            pthread_mutex_unlock(&clients_mutex);
 		} 
 	    else {
 		   if(strcmp(account->password,password) == 0){
@@ -451,15 +461,14 @@ void handle_login(int client_sockfd , Session *session){
 			session->account->IsLogIn = 1 ;  
             received_bytes = send(client_sockfd,"1200",sizeof("1200"),0); 
 		    // open mutex 
-			pthread_mutex_unlock(&clients_mutex);
 		    }
 		    else{
 			   //212 : sai mat khau    
                received_bytes = send(client_sockfd,"1212",sizeof("1212"),0);
-               pthread_mutex_unlock(&clients_mutex);
 		    }
 		} 
 	}
+	pthread_mutex_unlock(&clients_mutex);
 }
 
 void handle_creat_account(int client_sockfd ,  Session *session){
@@ -473,7 +482,6 @@ void handle_creat_account(int client_sockfd ,  Session *session){
 		
 		// 1214 : ban dang dang nhap bang 1 tai khoan khac      
         received_bytes = send(client_sockfd,"1214",sizeof("1214"),0); 
-        pthread_mutex_unlock(&clients_mutex);
 	}
 	else{
 	    username = strtok(NULL , " "); // lay username nhap vao  
@@ -490,13 +498,12 @@ void handle_creat_account(int client_sockfd ,  Session *session){
 			save_account(newAcc); 
 		    // 1100 : dang ky tai khoan thanh cong    
             received_bytes = send(client_sockfd,"1100",sizeof("1100"),0); 
-	        pthread_mutex_unlock(&clients_mutex);
 	    }
 	    else{
 		    // 1111 : tai khoan da ton tai    
             received_bytes = send(client_sockfd,"1111",sizeof("1111"),0); 
-            pthread_mutex_unlock(&clients_mutex);	
 	    }
 	}
+	pthread_mutex_unlock(&clients_mutex);
 } 
 
